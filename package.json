@@ -1,0 +1,14 @@
+{
+  "name": "PingFin-ClearingBank",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Nicolasodisee/PingFin-ClearingBank.git",
+  "author": "Nicolasodisee <nicolas.deridder@student.odisee.be>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.3",
+    "nodemon": "^3.1.14"
+  }
+}
