@@ -1,8 +1,9 @@
+=========================
 # PingFin – Clearing Bank
 
+---------------------------
 ## Dag 1 – Key Requirements
-
-
+---------------------------
 ### SEPA Flow
 - OB → CB → BB → ACK terug  
 - Validatie op elke stap  
@@ -35,4 +36,24 @@
 ### Simulation
 - PO’s genereren (ook fouten)  
 - PO versturen naar CB  
-- ACK ophalen en verwerken  
+- ACK ophalen en verwerken
+
+
+---------------------------
+## Dag 2 – Key Requirements
+---------------------------
+### API Endpoints Design
+- Ontwerp endpoints: /po_in, /po_out, /ack_in, /ack_out, /banks
+- Definieer request/response structuur (JSON)
+
+### Random Payment Order Generation
+- Genereren van PO’s (geldig + foutieve cases)
+- Gebruik voor testing van API
+
+### API Documentation
+- Documenteer alle endpoints (Swagger)
+- Beschrijf parameters, responses en foutcodes
+
+### GUI Design (Mock-ups)
+- Ontwerp basis schermen (PO overzicht, logs)
+- Toon status van transacties (success/fail)
