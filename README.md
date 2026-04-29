@@ -1,59 +1,68 @@
 =========================
 # PingFin – Clearing Bank
 
----------------------------
-## Dag 1 – Key Requirements
----------------------------
+--------------------------------------
+## Dag 1 – Analysis & Planning
+-------------------
+
 ### SEPA Flow
 - OB → CB → BB → ACK terug  
-- Validatie op elke stap  
-- Status, codes en timestamps worden aangepast  
+- Validatie en status update op elke stap  
+- Gebruik van timestamps  
 
 ### Use Cases
 - OB validation fails  
-- Internal payment  
 - CB validation fails  
 - BB validation fails  
 - Successful payment  
 
 ### Exceptions
 - CB niet bereikbaar → retry  
-- Geen ACK → timeout/fail   
+- Geen ACK → timeout/fail  
+- API errors → logging  
 
 ### Setup
-- GitHub repository  
-- Trello (task management)  
-- Postman (API testing)  
-- Excel (simulatie)  
+- GitHub, Trello, Postman, Excel  
+- Basis project structuur  
 
 ### API Basis
 - POST /token  
 - GET /banks  
 - POST /po_in  
 - GET /po_out  
-- GET /ack_in  
+- POST /ack_in  
+- GET /ack_out  
+
+### Database (concept)
+- PO_IN, PO_OUT, ACK_IN, ACK_OUT, BANKS, LOGS  
+- Logging + status tracking  
 
 ### Simulation
-- PO’s genereren (ook fouten)  
-- PO versturen naar CB  
-- ACK ophalen en verwerken
+- PO’s genereren (valid + invalid)  
+- Flow testen: OB → CB → BB → ACK  
+
+### Output
+- Flow analyse  
+- Use cases & exceptions  
+- Basis API & database ontwerp  
 
 
----------------------------
-## Dag 2 – Key Requirements
----------------------------
+-----------------------------------
+## Dag 2 – Implementation
+-----------------------
+
 ### API Endpoints Design
-- Ontwerp endpoints: /po_in, /po_out, /ack_in, /ack_out, /banks
-- Definieer request/response structuur (JSON)
+- Implementatie van endpoints: /po_in, /po_out, /ack_in, /ack_out, /banks
+- Correcte JSON request/response structuur volgens Swagger
 
 ### Random Payment Order Generation
 - Genereren van PO’s (geldig + foutieve cases)
-- Gebruik voor testing van API
+- Gebruiken voor API testing (Postman)
 
 ### API Documentation
-- Documenteer alle endpoints (Swagger)
-- Beschrijf parameters, responses en foutcodes
+- Documentatie van alle endpoints (Swagger)
+- Beschrijving van parameters, responses en foutcodes
 
 ### GUI Design (Mock-ups)
-- Ontwerp basis schermen (PO overzicht, logs)
-- Toon status van transacties (success/fail)
+- Ontwerp van basis schermen (PO overzicht, logs)
+- Weergave van status (success/fail, codes)
