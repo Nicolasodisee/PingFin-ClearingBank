@@ -7,19 +7,16 @@ const getBanks = (req, res, db) => {
     });
 };
 
-// src/controllers/bankController.js
 const jwt = require('jsonwebtoken');
 const { SECRET_JWT_KEY } = require('../middleware/authMiddleware');
 
 const getToken = (req, res, db) => {
     const { bic, secret_key } = req.body;
 
-    // Check 1: Hebben we alle info gekregen?
     if (!bic || !secret_key) {
         return res.status(400).json({ status: 400, ok: false, message: "BIC en Secret Key zijn verplicht" });
     }
 
-    // Check 2: Zoek de bank in de database (we zoeken op ID omdat dat je PK is)
     const sql = "SELECT id, secret_key FROM BANKS WHERE id = ? AND secret_key = ?";
     
     db.query(sql, [bic, secret_key], (err, results) => {
@@ -32,7 +29,6 @@ const getToken = (req, res, db) => {
             return res.status(401).json({ status: 401, ok: false, message: "Ongeldige BIC of Secret Key" });
         }
 
-        // Check 3: Token genereren
         try {
             const token = jwt.sign(
                 { bic: results[0].id }, 
@@ -40,10 +36,8 @@ const getToken = (req, res, db) => {
                 { expiresIn: '2h' }
             );
 
-            // OPTIONEEL: Update het token in de database (je nieuwe kolom)
             db.query("UPDATE BANKS SET token = ? WHERE id = ?", [token, results[0].id]);
 
-            // Stuur het antwoord terug
             res.status(200).json({
                 status: 200,
                 ok: true,

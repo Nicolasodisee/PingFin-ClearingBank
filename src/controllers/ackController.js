@@ -1,4 +1,4 @@
-const receiveACK = (req, res, db) => {
+const receiveACK = async (req, res, db) => {
     const { data } = req.body;
 
     if (!data || !Array.isArray(data) || data.length === 0) {
@@ -7,61 +7,31 @@ const receiveACK = (req, res, db) => {
 
     const ack = data[0];
 
-    const sqlIn = `INSERT INTO ACK_IN (
-        po_id, po_amount, po_message, po_datetime, 
-        ob_id, oa_id, ob_code, ob_datetime, 
-        cb_code, cb_datetime, 
-        bb_id, ba_id, bb_code, bb_datetime
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    try {
+        const sqlIn = `INSERT INTO ACK_IN (po_id, po_amount, po_message, po_datetime, ob_id, oa_id, ob_code, ob_datetime, cb_code, cb_datetime, bb_id, ba_id, bb_code, bb_datetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [ack.po_id, ack.po_amount, ack.po_message, ack.po_datetime, ack.ob_id, ack.oa_id, ack.ob_code, ack.ob_datetime, ack.cb_code, ack.cb_datetime, ack.bb_id, ack.ba_id, ack.bb_code, ack.bb_datetime];
+        
+        await db.promise().query(sqlIn, values);
 
-    const values = [
-        ack.po_id, ack.po_amount, ack.po_message, ack.po_datetime,
-        ack.ob_id, ack.oa_id, ack.ob_code, ack.ob_datetime,
-        ack.cb_code, ack.cb_datetime,
-        ack.bb_id, ack.ba_id, ack.bb_code, ack.bb_datetime
-    ];
+        const sqlOut = `INSERT INTO ACK_OUT (po_id, po_amount, po_message, po_datetime, ob_id, oa_id, ob_code, ob_datetime, cb_code, cb_datetime, bb_id, ba_id, bb_code, bb_datetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        await db.promise().query(sqlOut, values);
 
-    db.query(sqlIn, values, (err, result) => {
-        if (err) {
-            console.error("Fout bij ACK_IN:", err.message);
-            return res.status(500).json({ status: 500, ok: false, message: err.message });
-        }
+        await db.promise().query("DELETE FROM PO_OUT WHERE po_id = ?", [ack.po_id]);
 
-        const sqlOut = `INSERT INTO ACK_OUT (
-            po_id, po_amount, po_message, po_datetime, 
-            ob_id, oa_id, ob_code, ob_datetime, 
-            cb_code, cb_datetime, 
-            bb_id, ba_id, bb_code, bb_datetime
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        await db.promise().query("INSERT INTO LOGS (datetime, message, type, po_id) VALUES (NOW(), 'ACK ontvangen en verwerkt', 'ACK_SUCCESS', ?)", [ack.po_id]);
 
-        db.query(sqlOut, values, (errOut, resultOut) => {
-            if (errOut) {
-                console.error("Fout bij transfer naar ACK_OUT:", errOut.message);
-                return res.status(500).json({ status: 500, ok: false, message: "ACK_IN opgeslagen, maar transfer naar ACK_OUT mislukt." });
-            }
-
-            db.query("INSERT INTO LOGS (datetime, message, type, po_id) VALUES (NOW(), 'ACK doorgezet naar ACK_OUT', 'ACK_IN', ?)", [ack.po_id]);
-
-            console.log(`ACK voor ${ack.po_id} direct doorgezet van IN naar OUT.`);
-
-            res.status(200).json({
-                status: 200,
-                ok: true,
-                message: "Acknowledgment ontvangen en direct doorgezet naar ACK_OUT",
-            });
-        });
-    });
+        res.status(200).json({ status: 200, ok: true, message: "ACK verwerkt en PO afgerond." });
+    } catch (err) {
+        console.error("Fout bij ACK verwerking:", err.message);
+        res.status(500).json({ status: 500, ok: false, message: err.message });
+    }
 };
 
 const getFinalStatuses = (req, res, db) => {
-    const sql = "SELECT * FROM ACK_OUT";
-    db.query(sql, (err, results) => {
+    db.query("SELECT * FROM ACK_OUT", (err, results) => {
         if (err) return res.status(500).json({ status: 500, ok: false, message: err.message });
         res.status(200).json({ status: 200, ok: true, data: results });
     });
 };
 
-module.exports = {  
-    receiveACK, 
-    getFinalStatuses
-};
+module.exports = { receiveACK, getFinalStatuses };

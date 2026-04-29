@@ -7,10 +7,13 @@ module.exports = (db) => {
     const bankController = require('../controllers/bankController');
     const poController = require('../controllers/poController');
 	const ackController = require('../controllers/ackController');
+    const logController = require('../controllers/logController');
 
     router.post('/token', (req, res) => bankController.getToken(req, res, db));
     
-    router.get('/banks', (req, res) => bankController.getBanks(req, res, db));
+    router.get('/banks', verifyToken, (req, res) => bankController.getBanks(req, res, db));
+
+    router.get('/logs', (req, res) => logController.getLogs(req, res, db));
 
     router.post('/po_in', verifyToken, (req, res) => poController.receivePO(req, res, db));
     router.get('/po_out', verifyToken, (req, res) => poController.getPendingPOs(req, res, db));
@@ -19,7 +22,7 @@ module.exports = (db) => {
     router.get('/ack_out', verifyToken, (req, res) => ackController.getFinalStatuses(req, res, db));
 
     const jwt = require('jsonwebtoken');
-    const SECRET_JWT_KEY = "test";
+    const SECRET_JWT_KEY = process.env.JWT_SECRET;
 
     router.post('/login', (req, res) => {
     const { bic, token } = req.body;
