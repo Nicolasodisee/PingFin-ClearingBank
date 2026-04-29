@@ -1,7 +1,6 @@
 const mysql = require('mysql2/promise');
 const crypto = require('crypto');
 
-// Pas de URLs aan naar jouw routes
 const TOKEN_URL = 'http://localhost:8080/api/token';
 const PO_IN_URL = 'http://localhost:8080/api/po_in';
 
@@ -12,7 +11,6 @@ const DB_CONFIG = {
     database: 'Pingfin'
 };
 
-// De functie voor willekeurige PO's blijft hetzelfde
 const generateRandomPOs = (bankIds, count) => {
     const messages = ["Lunch", "Factuur 2024-01", "Pizza (No Pineapple!)", "Cadeau", "Huur"];
     const pos = [];
@@ -48,25 +46,22 @@ async function run() {
     let connection;
 
     try {
-        console.log(`🔗 Verbinding maken met de database...`);
+        console.log(`Verbinding maken met de database...`);
         connection = await mysql.createConnection(DB_CONFIG);
 
-        // Haal de gegevens van de eerste bank op om mee te testen
         const [rows] = await connection.execute("SELECT id, secret_key FROM BANKS LIMIT 1");
         
         if (rows.length === 0) {
-            console.error("❌ Fout: Geen banken gevonden in de tabel BANKS. Voeg er eerst een toe.");
+            console.error("Fout: Geen banken gevonden in de tabel BANKS. Voeg er eerst een toe.");
             process.exit(1);
         }
 
-        const myBank = rows[0]; // Bevat 'id' (de BIC) en 'secret_key'
+        const myBank = rows[0];
 
-        // Haal alle bank-IDs op voor de randomizer (voor ob_id en bb_id)
         const [allBanks] = await connection.execute("SELECT id FROM BANKS");
         const bankIds = allBanks.map(row => row.id);
 
-        // --- STAP 1: TOKEN AANVRAGEN ---
-        console.log(`🔑 Inloggen bij de Clearing Bank als ${myBank.id}...`);
+        console.log(`Inloggen bij de Clearing Bank als ${myBank.id}...`);
         const tokenResponse = await fetch(TOKEN_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -83,13 +78,13 @@ async function run() {
         }
 
         const bearerToken = tokenData.token;
-        console.log("✅ Bearer Token ontvangen.");
+        console.log("Bearer Token ontvangen.");
 
         // --- STAP 2: PO'S GENEREREN EN VERZENDEN ---
         const randomData = generateRandomPOs(bankIds, count);
-        console.log(`📦 ${count} PO's klaargezet voor verzending.`);
+        console.log(`${count} PO's klaargezet voor verzending.`);
 
-        console.log(`🚀 POST naar ${PO_IN_URL}...`);
+        console.log(`POST naar ${PO_IN_URL}...`);
         const response = await fetch(PO_IN_URL, {
             method: 'POST',
             headers: { 
@@ -102,7 +97,7 @@ async function run() {
         const result = await response.json();
 
         if (response.ok) {
-            console.log("🎉 Succes! Server bericht:", result.message);
+            console.log("Succes! Server bericht:", result.message);
             console.table(randomData.map(p => ({ 
                 ID: p.po_id, 
                 Bedrag: `€${p.po_amount}`,
@@ -110,11 +105,11 @@ async function run() {
                 Naar: p.bb_id
             })));
         } else {
-            console.error("⚠️ De server heeft de PO's geweigerd:", result.message);
+            console.error("De server heeft de PO's geweigerd:", result.message);
         }
 
     } catch (error) {
-        console.error("💥 Fout in random.js:", error.message);
+        console.error("Fout in random.js:", error.message);
     } finally {
         if (connection) await connection.end();
         process.exit();
