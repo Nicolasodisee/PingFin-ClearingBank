@@ -66,3 +66,33 @@
 ### GUI Design (Mock-ups)
 - Ontwerp van basis schermen (PO overzicht, logs)
 - Weergave van status (success/fail, codes)
+
+
+  -------------------------------------------------
+## Dag 3 – Validation, Testing & Deployment
+-----------------------------------
+
+### API Testing (Postman)
+- Testen van endpoints (/po_in, /po_out, /ack_in, /ack_out)
+- Controle van responses (statuscodes, JSON)
+
+### Validatie & Exception Handling
+- Validatie van inkomende data (IBAN, bedrag, bankcodes)
+- Afhandeling van fouten (NACK, error responses)
+
+### Interbank Communicatie
+- Testen van volledige flow (OB → CB → BB → ACK)
+- Controle van correcte routing en responses
+
+### Logging & Foutcodes
+- Logging van transacties en events
+- Gebruik van foutcodes voor analyse
+
+### Timeout & Retry Handling
+- Detectie van timeouts (geen ACK)
+- Retry bij tijdelijke fouten
+
+### Deployment
+- Deployment via Docker containers
+- Backend en database op server
+- API bereikbaar voor integratie
