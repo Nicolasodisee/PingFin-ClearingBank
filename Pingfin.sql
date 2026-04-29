@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS BANKS (
     id VARCHAR(11) NOT NULL,
     name VARCHAR(255) NULL,
     description TEXT NULL,
+    secret_key VARCHAR(255) NULL,
     token VARCHAR(255) NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;

@@ -1,7 +1,10 @@
 const mysql = require('mysql2/promise');
 const crypto = require('crypto');
 
-const API_URL = 'http://localhost:8080/api/po_in';
+// Pas de URLs aan naar jouw routes
+const TOKEN_URL = 'http://localhost:8080/api/token';
+const PO_IN_URL = 'http://localhost:8080/api/po_in';
+
 const DB_CONFIG = {
     host: 'localhost',
     user: 'root',
@@ -9,6 +12,7 @@ const DB_CONFIG = {
     database: 'Pingfin'
 };
 
+// De functie voor willekeurige PO's blijft hetzelfde
 const generateRandomPOs = (bankIds, count) => {
     const messages = ["Lunch", "Factuur 2024-01", "Pizza (No Pineapple!)", "Cadeau", "Huur"];
     const pos = [];
@@ -44,48 +48,77 @@ async function run() {
     let connection;
 
     try {
-        console.log(`Verbinden met database ${DB_CONFIG.database}...`);
+        console.log(`🔗 Verbinding maken met de database...`);
         connection = await mysql.createConnection(DB_CONFIG);
 
-        const [rows] = await connection.execute("SELECT id FROM BANKS");
-        const bankIds = rows.map(row => row.id);
-
-        if (bankIds.length < 2) {
-            console.error("Fout: Je hebt minimaal 2 banken in de BANKS tabel nodig.");
+        // Haal de gegevens van de eerste bank op om mee te testen
+        const [rows] = await connection.execute("SELECT id, secret_key FROM BANKS LIMIT 1");
+        
+        if (rows.length === 0) {
+            console.error("❌ Fout: Geen banken gevonden in de tabel BANKS. Voeg er eerst een toe.");
             process.exit(1);
         }
 
-        const randomData = generateRandomPOs(bankIds, count);
-        console.log(`${count} volledige PO's gegenereerd.`);
+        const myBank = rows[0]; // Bevat 'id' (de BIC) en 'secret_key'
 
-        console.log(`Verzenden naar ${API_URL}...`);
-        const response = await fetch(API_URL, {
+        // Haal alle bank-IDs op voor de randomizer (voor ob_id en bb_id)
+        const [allBanks] = await connection.execute("SELECT id FROM BANKS");
+        const bankIds = allBanks.map(row => row.id);
+
+        // --- STAP 1: TOKEN AANVRAGEN ---
+        console.log(`🔑 Inloggen bij de Clearing Bank als ${myBank.id}...`);
+        const tokenResponse = await fetch(TOKEN_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                bic: myBank.id, 
+                secret_key: myBank.secret_key 
+            })
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (!tokenResponse.ok) {
+            throw new Error(`Login mislukt: ${tokenData.message}`);
+        }
+
+        const bearerToken = tokenData.token;
+        console.log("✅ Bearer Token ontvangen.");
+
+        // --- STAP 2: PO'S GENEREREN EN VERZENDEN ---
+        const randomData = generateRandomPOs(bankIds, count);
+        console.log(`📦 ${count} PO's klaargezet voor verzending.`);
+
+        console.log(`🚀 POST naar ${PO_IN_URL}...`);
+        const response = await fetch(PO_IN_URL, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${bearerToken}` 
+            },
             body: JSON.stringify({ data: randomData })
         });
 
         const result = await response.json();
 
         if (response.ok) {
-            console.log("Succes! Server antwoord:", result.message);
+            console.log("🎉 Succes! Server bericht:", result.message);
             console.table(randomData.map(p => ({ 
                 ID: p.po_id, 
-                Bedrag: `€${p.po_amount}`, 
-                Status: p.po_amount > 670 ? 'Zal weigeren' : 'OK' 
+                Bedrag: `€${p.po_amount}`,
+                Van: p.ob_id,
+                Naar: p.bb_id
             })));
         } else {
-            console.error("Server weigerde de batch:", result.message);
+            console.error("⚠️ De server heeft de PO's geweigerd:", result.message);
         }
 
     } catch (error) {
-        console.error("Kritieke fout:", error.message);
-        if (error.code === 'ECONNREFUSED') {
-            console.log("Staat je server ('node index.js') wel aan?");
-        }
+        console.error("💥 Fout in random.js:", error.message);
     } finally {
         if (connection) await connection.end();
         process.exit();
     }
 }
+
 run();
