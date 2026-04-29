@@ -46,7 +46,7 @@ async function run() {
     let connection;
 
     try {
-        console.log(`🔗 Verbinding maken met de database...`);
+        console.log(`Verbinding maken met de database...`);
         connection = await mysql.createConnection(DB_CONFIG);
 
         const [rows] = await connection.execute("SELECT id, secret_key FROM BANKS LIMIT 1");

@@ -1,8 +1,5 @@
 const API_URL = 'http://localhost:8080/api';
 
-// --- MASTER TOKEN LOGICA ---
-
-// Hulpmiddel om de headers met het token op te halen
 const getAuthHeaders = () => {
     const token = localStorage.getItem('cb_master_token');
     return {
@@ -11,14 +8,13 @@ const getAuthHeaders = () => {
     };
 };
 
-// Functie om in te loggen als Master (Clearing Bank Admin)
 async function loginMaster() {
     try {
         const response = await fetch(`${API_URL}/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                bic: 'CB-MASTER', // De ID die je in je SQL hebt gezet
+                bic: 'CB-MASTER',
                 secret_key: 'super-geheim-master-wachtwoord' 
             })
         });
@@ -26,7 +22,6 @@ async function loginMaster() {
         if (result.ok) {
             localStorage.setItem('cb_master_token', result.token);
             console.log("Master Token succesvol vernieuwd.");
-            // Start de updates zodra we een token hebben
             updateDashboard();
         } else {
             console.error("Master login mislukt:", result.message);
@@ -36,7 +31,6 @@ async function loginMaster() {
     }
 }
 
-// Selectoren
 const pageTitle = document.querySelector('.js-page-title');
 const navButtons = document.querySelectorAll('.js-nav-btn');
 const pages = document.querySelectorAll('.js-page');
@@ -45,7 +39,6 @@ const totalCounter = document.querySelector('.js-total-count');
 const bankList = document.querySelector('.js-bank-list');
 const logsContent = document.querySelector('.js-logs-content');
 
-// Navigatie
 navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         const targetPageId = btn.dataset.page;
@@ -61,11 +54,10 @@ navButtons.forEach(btn => {
     });
 });
 
-// 1. Dashboard (Transacties) - Nu met Token
 async function updateDashboard() {
     try {
         const response = await fetch(`${API_URL}/po_out`, {
-            headers: getAuthHeaders() // Headers toegevoegd
+            headers: getAuthHeaders()
         });
         const result = await response.json();
         if (result.ok) {
@@ -75,12 +67,11 @@ async function updateDashboard() {
     } catch (e) { console.error('Dashboard fout:', e); }
 }
 
-// 2. Banken lijst - Nu met Token
 async function updateBankNodes() {
     bankList.innerHTML = '<p class="text-slate-500">Banken laden...</p>';
     try {
         const response = await fetch(`${API_URL}/banks`, {
-            headers: getAuthHeaders() // Headers toegevoegd
+            headers: getAuthHeaders()
         });
         const result = await response.json();
         if (result.ok || result.status === 200) {
@@ -94,12 +85,11 @@ async function updateBankNodes() {
     } catch (e) { console.error('Banks fout:', e); }
 }
 
-// 3. Traffic Logs (Audit Trail) - Nu met Token
 async function updateLogs() {
     logsContent.textContent = 'Logs ophalen uit database...';
     try {
         const response = await fetch(`${API_URL}/logs`, {
-            headers: getAuthHeaders() // Headers toegevoegd
+            headers: getAuthHeaders()
         });
         const result = await response.json(); 
         
@@ -137,5 +127,4 @@ function renderTable(data, container) {
     `).join('');
 }
 
-// Eerst inloggen, daarna wordt updateDashboard automatisch aangeroepen
 loginMaster();
