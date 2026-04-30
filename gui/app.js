@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:8080/api';
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('random_ahh_login');
+    const token = localStorage.getItem('adminlogin');
     return {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -15,21 +15,21 @@ async function loginMaster() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 bic: 'Admin', 
-                secret_key: 'pedopietje' 
+                secret_key: 'nicolasisdegoat' 
             })
         });
 
         const result = await response.json();
         
         if (result.ok) {
-            localStorage.setItem('random_ahh_login', result.token);
-            console.log("random_ahh_login Token succesvol vernieuwd voor Admin.");
+            localStorage.setItem('adminlogin', result.token);
+            console.log("Admin Token succesvol vernieuwd voor Admin.");
             updateDashboard();
         } else {
-            console.error("random_ahh_login mislukt:", result.message);
+            console.error("Admin login mislukt:", result.message);
         }
     } catch (e) {
-        console.error("random_ahh_login error:", e);
+        console.error("Admin login error:", e);
     }
 }
 

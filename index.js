@@ -35,7 +35,7 @@ setInterval(() => {
     poController.processTimeouts(db, 10); 
 }, 60000);
 
-
+const port = process.env.PORT;
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -45,7 +45,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:8080', // Zorg dat dit overeenkomt met je poort!
+                url: `http://localhost:${port}`,
             },
         ],
         components: {
@@ -58,7 +58,7 @@ const swaggerOptions = {
             },
         },
     },
-    apis: ['./src/routes/*.js'], // Pad naar je api.js[cite: 6, 10]
+    apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -76,7 +76,7 @@ app.get('/', (req, res) => {
 
 module.exports = { db, app };
 
-const port = process.env.PORT;
+
 app.listen(port, () => {
     console.log(`Clearing Bank API draait op http://localhost:${port}`);
 });
