@@ -1,9 +1,6 @@
-=========================
 # PingFin – Clearing Bank
 
---------------------------------------
 ## Dag 1 – Analysis & Planning
--------------------
 
 ### SEPA Flow
 - OB → CB → BB → ACK terug  
@@ -47,9 +44,7 @@
 - Basis API & database ontwerp  
 
 
------------------------------------
 ## Dag 2 – Implementation
------------------------
 
 ### API Endpoints Design
 - Implementatie van endpoints: /po_in, /po_out, /ack_in, /ack_out, /banks
@@ -68,9 +63,7 @@
 - Weergave van status (success/fail, codes)
 
 
-  -------------------------------------------------
 ## Dag 3 – Validation, Testing & Deployment
------------------------------------
 
 ### API Testing (Postman)
 - Testen van endpoints (/po_in, /po_out, /ack_in, /ack_out)
@@ -96,3 +89,30 @@
 - Deployment via Docker containers
 - Backend en database op server
 - API bereikbaar voor integratie
+
+
+## Dag 4 – Final Presentation
+
+### Application Design
+- Overzicht van architectuur (Database, API, GUI)
+- Samenwerking tussen componenten
+
+### Resultaten
+- Werkende onderdelen (API, flow, logging)
+- Beperkingen (GUI, validaties)
+
+### Demo / Test Run
+- End-to-end flow (OB → CB → BB → ACK)
+- Test via Postman
+
+### Project Management
+- Gebruik van Trello (taken & planning)
+- Verdeling van rollen binnen team
+
+### Communicatie & Samenwerking
+- Gebruik van GitHub (branches, PR’s)
+- Teamoverleg en samenwerking
+
+### Reflectie & Verbeterpunten
+- Uitbreiding GUI en validatie
+- Verbetering testing en planning
