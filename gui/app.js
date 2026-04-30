@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:8080/api';
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('cb_master_token');
+    const token = localStorage.getItem('random_ahh_login');
     return {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -14,20 +14,22 @@ async function loginMaster() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                bic: 'CB-MASTER',
-                secret_key: 'super-geheim-master-wachtwoord' 
+                bic: 'Admin', 
+                secret_key: 'pedopietje' 
             })
         });
+
         const result = await response.json();
+        
         if (result.ok) {
-            localStorage.setItem('cb_master_token', result.token);
-            console.log("Master Token succesvol vernieuwd.");
+            localStorage.setItem('random_ahh_login', result.token);
+            console.log("random_ahh_login Token succesvol vernieuwd voor Admin.");
             updateDashboard();
         } else {
-            console.error("Master login mislukt:", result.message);
+            console.error("random_ahh_login mislukt:", result.message);
         }
     } catch (e) {
-        console.error("Login master error:", e);
+        console.error("random_ahh_login error:", e);
     }
 }
 

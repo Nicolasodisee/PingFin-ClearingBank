@@ -3,6 +3,8 @@ const cors = require('cors');
 const mysql = require("mysql2");
 const app = express();
 require('dotenv').config();
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 app.use(cors({
     origin: process.env.FRONTEND_URL,
@@ -32,6 +34,35 @@ db.connect((err) => {
 setInterval(() => {
     poController.processTimeouts(db, 10); 
 }, 60000);
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Clearing Bank API',
+            version: '1.0.0',
+        },
+        servers: [
+            {
+                url: 'http://localhost:8080', // Zorg dat dit overeenkomt met je poort!
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+    },
+    apis: ['./src/routes/*.js'], // Pad naar je api.js[cite: 6, 10]
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const apiRoutes = require('./src/routes/api')(db); 
 app.use('/api', apiRoutes);
