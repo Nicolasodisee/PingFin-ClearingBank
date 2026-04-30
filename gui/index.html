@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="bg-[#0f172a] text-slate-200 font-sans overflow-hidden">
 
     <div class="flex h-screen">
@@ -58,12 +60,15 @@
 
             <section id="dashboardPage" class="js-page">
                 <div class="grid grid-cols-1 gap-6 mb-10">
-                    <div class="bg-[#1e293b] p-8 rounded-xl border border-slate-700 shadow-lg flex flex-col items-center justify-center text-center">
-                        <p class="text-slate-500 text-xs uppercase font-bold mb-2 tracking-widest">Pending Payment Orders</p>
+                    <div
+                        class="bg-[#1e293b] p-8 rounded-xl border border-slate-700 shadow-lg flex flex-col items-center justify-center text-center">
+                        <p class="text-slate-500 text-xs uppercase font-bold mb-2 tracking-widest">Pending Payment
+                            Orders</p>
                         <h3 class="text-6xl font-black text-white js-total-count">0</h3>
                         <div class="mt-4 flex items-center space-x-2">
                             <span class="relative flex h-3 w-3">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                             </span>
                             <span class="text-xs text-slate-400 font-medium">Monitoring outgoing traffic</span>
@@ -74,16 +79,18 @@
                 <div class="bg-[#1e293b] rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
                     <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
                         <h4 class="font-bold text-slate-300">Recent Incoming PO_OUT</h4>
-                        <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded uppercase tracking-tighter">Real-time update</span>
+                        <span
+                            class="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded uppercase tracking-tighter">Real-time
+                            update</span>
                     </div>
                     <table class="w-full text-left">
                         <thead class="bg-slate-800/30 text-slate-500 text-xs uppercase">
                             <tr>
-                                <th class="p-4 font-medium">ID</th>
-                                <th class="p-4 font-medium">From Bank</th>
-                                <th class="p-4 font-medium">To Bank</th>
-                                <th class="p-4 font-medium">Amount</th>
-                                <th class="p-4 font-medium text-right">Status</th>
+                                <th scope="col" class="p-4 font-medium">ID</th>
+                                <th scope="col" class="p-4 font-medium">From Bank</th>
+                                <th scope="col" class="p-4 font-medium">To Bank</th>
+                                <th scope="col" class="p-4 font-medium">Amount</th>
+                                <th scope="col" class="p-4 font-medium text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="js-table-body text-sm">
@@ -101,7 +108,7 @@
                 <div class="bg-[#1e293b] rounded-xl border border-slate-700 p-6 shadow-2xl">
                     <div class="flex justify-between items-center mb-6">
                         <h4 class="font-bold text-xl text-white">Transaction Audit Trail</h4>
-                        <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm">
+                        <button type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm">
                             Export Logs (.csv)
                         </button>
                     </div>
@@ -117,4 +124,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
